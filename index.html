@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多功能计算器 - 毛玻璃版</title>
+    <style>
+        /* --- Google Fonts for a modern look (Optional) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+        /* --- 主题颜色和设计变量 --- */
+        :root {
+            --font-family: 'Roboto', "Microsoft YaHei UI", sans-serif;
+            --base-font-size: 16px; /* Base size for rem units */
+
+            /* Light Mode */
+            --bg-gradient: linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
+            --text-color: #1a1a1a;
+            --text-color-faded: #33333399;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-shadow: rgba(0, 0, 0, 0.1);
+            --button-hover-bg: rgba(255, 255, 255, 0.2);
+            --operator-text-color: #d16ba5;
+            --equals-bg: #d16ba5;
+            --equals-text-color: #fff;
+            --equals-hover-bg: #c777b9;
+            --clear-bg: #f86969;
+            --clear-hover-bg: #f85050;
+            --tab-active-bg: rgba(255, 255, 255, 0.3);
+            --input-bg: rgba(255, 255, 255, 0.15);
+        }
+
+        .dark-mode {
+            /* Dark Mode */
+            --bg-gradient: linear-gradient(to right top, #0d0c1d, #16182e, #1d2540, #243353, #2a4267, #265377, #1f6486, #147694, #008a9a, #009c96, #00ac89, #12b975);
+            --text-color: #f0f0f0;
+            --text-color-faded: #cccccc99;
+            --glass-bg: rgba(22, 24, 46, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-shadow: rgba(0, 0, 0, 0.2);
+            --button-hover-bg: rgba(255, 255, 255, 0.1);
+            --operator-text-color: #5ffbf1;
+            --equals-bg: #12b975;
+            --equals-text-color: #1a1a1a;
+            --equals-hover-bg: #5ffbf1;
+            --clear-bg: #f86969;
+            --clear-hover-bg: #f85050;
+            --tab-active-bg: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- 基础和背景样式 --- */
+        * {
+            box-sizing: border-box;
+            font-family: var(--font-family);
+        }
+
+        html {
+            font-size: var(--base-font-size);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            transition: background 0.5s, color 0.5s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 95vw;
+            height: 95vh;
+            max-width: 1200px;
+            max-height: 800px;
+            display: flex;
+            flex-direction: column;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 var(--glass-shadow);
+            overflow: hidden;
+        }
+        
+        /* --- 顶部菜单和选项卡 --- */
+        .header-bar {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .header-bar h1 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .menu-buttons button {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--glass-border);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        
+        .menu-buttons button:hover {
+            background-color: var(--button-hover-bg);
+        }
+
+        .tab-bar {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0 0.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            flex-shrink: 0;
+        }
+
+        .tab-button {
+            padding: 0.9rem 1.25rem;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 400;
+            border-radius: 10px 10px 0 0;
+            transition: all 0.2s;
+            position: relative;
+            opacity: 0.7;
+        }
+        
+        .tab-button.active {
+            font-weight: 500;
+            background-color: var(--tab-active-bg);
+            opacity: 1;
+        }
+        
+        .tab-button:hover {
+            opacity: 1;
+            background-color: var(--tab-active-bg);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 1.5rem;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* --- 计算器布局 --- */
+        .calculator-container {
+            display: flex;
+            height: 100%;
+            gap: 1.5rem;
+        }
+
+        .calculator-main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .history-panel {
+            flex-basis: 280px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 1.25rem;
+            transition: all 0.3s;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+        }
+        
+        .history-panel.hidden {
+            display: none;
+        }
+        
+        .history-panel h3 {
+            margin: 0 0 1rem 0;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        #history-listbox {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+        
+        #history-listbox li {
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            word-wrap: break-word;
+            margin-bottom: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        #history-listbox li:hover {
+            background-color: var(--button-hover-bg);
+        }
+        
+        /* --- 计算器显示屏和按钮 --- */
+        .display-container {
+            padding: 1rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            text-align: right;
+            position: relative;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+        }
+
+        #display-entry {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 3.5rem; /* Increased font size */
+            font-weight: 300;
+            text-align: right;
+            padding: 1rem 0.5rem 0.5rem;
+            outline: none;
+        }
+
+        #memory-indicator {
+            position: absolute;
+            left: 1.25rem;
+            top: 1rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--operator-text-color);
+        }
+        
+        .mode-toggle-frame {
+            display: flex;
+            margin-bottom: 1rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .mode-toggle-frame button {
+            flex-grow: 1;
+            padding: 0.75rem;
+            font-size: 0.9rem; /* Increased font size */
+            border: none;
+            background-color: transparent;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mode-toggle-frame button.active {
+            background-color: var(--button-hover-bg);
+            font-weight: 500;
+        }
+        .mode-toggle-frame button:first-child {
+            border-right: 1px solid var(--glass-border);
+        }
+
+        .buttons-container {
+            display: grid;
+            gap: 0.75rem; /* Increased gap */
+            flex-grow: 1;
+        }
+
+        .buttons-container button {
+            font-size: 1.5rem; /* Increased font size */
+            font-weight: 400;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: transparent;
+            color: var(--text-color);
+            min-height: 60px; /* Increased height */
+        }
+
+        .buttons-container button:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-2px);
+        }
+        
+        .buttons-container button:active {
+            transform: translateY(0px) scale(0.98);
+            background-color: var(--glass-bg);
+        }
+        
+        .btn-operator, .btn-scientific, .btn-parenthesis {
+            color: var(--operator-text-color);
+            font-weight: 500;
+        }
+
+        .btn-equals {
+            background-color: var(--equals-bg);
+            color: var(--equals-text-color);
+            font-weight: 700;
+        }
+        .btn-equals:hover {
+            background-color: var(--equals-hover-bg);
+        }
+        .dark-mode .btn-equals:hover {
+            color: #1a1a1a;
+        }
+
+        .btn-clear-c {
+            background-color: var(--clear-bg);
+            color: var(--equals-text-color);
+        }
+        .btn-clear-c:hover {
+            background-color: var(--clear-hover-bg);
+        }
+
+        .grid-span-2 { grid-column: span 2; }
+        
+        /* --- 其他工具通用样式 --- */
+        .tool-grid-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .tool-frame {
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+        }
+
+        .tool-frame legend {
+            font-weight: 500;
+            font-size: 1.2rem;
+            padding: 0 1rem;
+            color: var(--text-color);
+        }
+        
+        .tool-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1rem 1.25rem;
+            align-items: center;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .tool-grid label {
+            justify-self: end;
+            font-size: 1rem;
+        }
+        
+        .tool-grid input, .tool-grid select {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .tool-grid input:focus, .tool-grid select:focus {
+            background-color: var(--button-hover-bg);
+            border-color: var(--operator-text-color);
+        }
+        
+        .tool-grid button {
+            grid-column: 1 / -1;
+            padding: 0.9rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            background-color: var(--equals-bg);
+            color: var(--equals-text-color);
+            transition: all 0.2s;
+        }
+        .tool-grid button:hover {
+             background-color: var(--equals-hover-bg);
+             transform: translateY(-2px);
+        }
+
+        .result-label, .multi-result-label {
+            background-color: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-label {
+            grid-column: 1 / -1;
+            font-weight: 500;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header-bar">
+            <h1>多功能计算器</h1>
+            <div class="menu-buttons">
+                <button id="toggle-history-btn">历史记录</button>
+                <button id="toggle-theme-btn">切换主题</button>
+            </div>
+        </div>
+
+        <div class="tab-bar">
+            <button class="tab-button active" data-tab="calculator">计算器</button>
+            <button class="tab-button" data-tab="unit-converter">单位换算</button>
+            <button class="tab-button" data-tab="date-calc">日期计算</button>
+            <button class="tab-button" data-tab="bmi">BMI</button>
+            <button class="tab-button" data-tab="loan">贷款</button>
+            <button class="tab-button" data-tab="tip">小费</button>
+            <button class="tab-button" data-tab="discount">折扣</button>
+        </div>
+
+        <!-- 计算器 -->
+        <div id="tab-calculator" class="tab-content active">
+            <div class="calculator-container">
+                <div class="calculator-main">
+                    <div class="display-container">
+                        <div id="memory-indicator"></div>
+                        <input type="text" id="display-entry" value="0" readonly>
+                    </div>
+                    <div class="mode-toggle-frame">
+                        <button id="daily-mode-btn" class="active">日常模式</button>
+                        <button id="scientific-mode-btn">科学模式</button>
+                    </div>
+                    <div class="buttons-container" id="buttons-container">
+                        <!-- Buttons are generated by JS -->
+                    </div>
+                </div>
+                <div class="history-panel hidden">
+                    <h3>计算历史</h3>
+                    <ul id="history-listbox"></ul>
+                    <button id="clear-history-button" class="btn-clear-c">清空历史</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 单位换算 -->
+        <div id="tab-unit-converter" class="tab-content">
+             <div class="tool-frame">
+                <div class="tool-grid">
+                    <label for="unit-type-cb">单位类型:</label>
+                    <select id="unit-type-cb">
+                        <option>长度</option>
+                        <option>质量</option>
+                        <option>温度</option>
+                        <option>面积</option>
+                        <option>体积</option>
+                        <option>速度</option>
+                    </select>
+
+                    <label for="from-unit-cb">从:</label>
+                    <select id="from-unit-cb"></select>
+
+                    <label for="to-unit-cb">到:</label>
+                    <select id="to-unit-cb"></select>
+
+                    <label for="unit-input">输入值:</label>
+                    <input type="number" id="unit-input" placeholder="输入要转换的数值">
+
+                    <button id="perform-unit-conversion-btn">转换</button>
+
+                    <label>结果:</label>
+                    <div id="unit-result" class="result-label"></div>
+                </div>
+             </div>
+        </div>
+        
+        <!-- 日期计算 -->
+        <div id="tab-date-calc" class="tab-content">
+            <div class="tool-grid-container">
+             <fieldset class="tool-frame">
+                <legend>计算日期差</legend>
+                <div class="tool-grid">
+                    <label for="start-date-input">开始日期:</label>
+                    <input type="date" id="start-date-input">
+                    <label for="end-date-input">结束日期:</label>
+                    <input type="date" id="end-date-input">
+                    <button id="calculate-date-diff-btn">计算天数差</button>
+                    <div id="date-diff-result" class="result-label"></div>
+                </div>
+             </fieldset>
+             <fieldset class="tool-frame">
+                <legend>日期加减天数</legend>
+                <div class="tool-grid">
+                    <label for="base-date-input">基准日期:</label>
+                    <input type="date" id="base-date-input">
+                    <label for="days-offset-input">天数 (+/-):</label>
+                    <input type="number" id="days-offset-input" placeholder="输入正数或负数">
+                    <button id="calculate-date-offset-btn">计算新日期</button>
+                    <div id="date-offset-result" class="result-label"></div>
+                </div>
+             </fieldset>
+             </div>
+        </div>
+
+        <!-- BMI 计算 -->
+        <div id="tab-bmi" class="tab-content">
+            <div class="tool-frame">
+                <div class="tool-grid">
+                    <label for="bmi-height">身高 (cm):</label>
+                    <input type="number" id="bmi-height" placeholder="例如: 175">
+                    <label for="bmi-weight">体重 (kg):</label>
+                    <input type="number" id="bmi-weight" placeholder="例如: 70">
+                    <button id="calculate-bmi-btn">计算BMI</button>
+                    <div id="bmi-result" class="result-label"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 贷款计算 -->
+        <div id="tab-loan" class="tab-content">
+            <div class="tool-frame">
+                <div class="tool-grid">
+                    <label for="loan-principal">贷款金额:</label>
+                    <input type="number" id="loan-principal" placeholder="例如: 500000">
+                    <label for="loan-rate">年利率 (%):</label>
+                    <input type="number" id="loan-rate" placeholder="例如: 4.9">
+                    <label for="loan-term">贷款期限 (年):</label>
+                    <input type="number" id="loan-term" placeholder="例如: 30">
+                    <button id="calculate-loan-btn">计算</button>
+                    
+                    <label>月供:</label>
+                    <div id="loan-monthly-payment" class="multi-result-label"></div>
+                    <label>总还款:</label>
+                    <div id="loan-total-payment" class="multi-result-label"></div>
+                    <label>总利息:</label>
+                    <div id="loan-total-interest" class="multi-result-label"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 小费计算 -->
+        <div id="tab-tip" class="tab-content">
+             <div class="tool-frame">
+                <div class="tool-grid">
+                    <label for="tip-bill">账单金额:</label>
+                    <input type="number" id="tip-bill" placeholder="例如: 150">
+                    <label for="tip-percent">小费比例 (%):</label>
+                    <input type="number" id="tip-percent" value="15">
+                    <label for="tip-people">人数:</label>
+                    <input type="number" id="tip-people" value="1">
+                    <button id="calculate-tip-btn">计算</button>
+                    
+                    <label>小费金额:</label>
+                    <div id="tip-amount" class="multi-result-label"></div>
+                    <label>总金额:</label>
+                    <div id="tip-total-bill" class="multi-result-label"></div>
+                    <label>每人支付:</label>
+                    <div id="tip-per-person" class="multi-result-label"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 折扣计算 -->
+        <div id="tab-discount" class="tab-content">
+            <div class="tool-frame">
+                <div class="tool-grid">
+                    <label for="discount-original-price">原价:</label>
+                    <input type="number" id="discount-original-price" placeholder="例如: 299">
+                    <label for="discount-percent">折扣 (%):</label>
+                    <input type="number" id="discount-percent" placeholder="例如: 85 (代表85折)">
+                    <button id="calculate-discount-btn">计算</button>
+                    
+                    <label>折后价:</label>
+                    <div id="discount-final-price" class="multi-result-label"></div>
+                    <label>节省金额:</label>
+                    <div id="discount-saved-amount" class="multi-result-label"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// The JavaScript logic remains the same as it correctly implements all functionalities.
+// It is included here unmodified.
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- 全局状态和DOM元素 ---
+    const dom = {
+        body: document.body,
+        tabs: document.querySelectorAll('.tab-button'),
+        tabContents: document.querySelectorAll('.tab-content'),
+        toggleThemeBtn: document.getElementById('toggle-theme-btn'),
+        toggleHistoryBtn: document.getElementById('toggle-history-btn'),
+        // 计算器
+        calculator: {
+            display: document.getElementById('display-entry'),
+            buttonsContainer: document.getElementById('buttons-container'),
+            memoryIndicator: document.getElementById('memory-indicator'),
+            dailyModeBtn: document.getElementById('daily-mode-btn'),
+            scientificModeBtn: document.getElementById('scientific-mode-btn'),
+            historyPanel: document.querySelector('.history-panel'),
+            historyList: document.getElementById('history-listbox'),
+            clearHistoryBtn: document.getElementById('clear-history-button'),
+        },
+        // 单位换算
+        unitConverter: {
+            type: document.getElementById('unit-type-cb'),
+            from: document.getElementById('from-unit-cb'),
+            to: document.getElementById('to-unit-cb'),
+            input: document.getElementById('unit-input'),
+            result: document.getElementById('unit-result'),
+            button: document.getElementById('perform-unit-conversion-btn'),
+        },
+        // 日期计算
+        dateCalc: {
+            startDate: document.getElementById('start-date-input'),
+            endDate: document.getElementById('end-date-input'),
+            diffBtn: document.getElementById('calculate-date-diff-btn'),
+            diffResult: document.getElementById('date-diff-result'),
+            baseDate: document.getElementById('base-date-input'),
+            offsetDays: document.getElementById('days-offset-input'),
+            offsetBtn: document.getElementById('calculate-date-offset-btn'),
+            offsetResult: document.getElementById('date-offset-result'),
+        },
+        // BMI
+        bmi: {
+            height: document.getElementById('bmi-height'),
+            weight: document.getElementById('bmi-weight'),
+            button: document.getElementById('calculate-bmi-btn'),
+            result: document.getElementById('bmi-result'),
+        },
+        // 贷款
+        loan: {
+            principal: document.getElementById('loan-principal'),
+            rate: document.getElementById('loan-rate'),
+            term: document.getElementById('loan-term'),
+            button: document.getElementById('calculate-loan-btn'),
+            monthlyPayment: document.getElementById('loan-monthly-payment'),
+            totalPayment: document.getElementById('loan-total-payment'),
+            totalInterest: document.getElementById('loan-total-interest'),
+        },
+        // 小费
+        tip: {
+            bill: document.getElementById('tip-bill'),
+            percent: document.getElementById('tip-percent'),
+            people: document.getElementById('tip-people'),
+            button: document.getElementById('calculate-tip-btn'),
+            amount: document.getElementById('tip-amount'),
+            totalBill: document.getElementById('tip-total-bill'),
+            perPerson: document.getElementById('tip-per-person'),
+        },
+        // 折扣
+        discount: {
+            originalPrice: document.getElementById('discount-original-price'),
+            percent: document.getElementById('discount-percent'),
+            button: document.getElementById('calculate-discount-btn'),
+            finalPrice: document.getElementById('discount-final-price'),
+            savedAmount: document.getElementById('discount-saved-amount'),
+        },
+    };
+
+    let state = {
+        calculator: {
+            currentInput: "",
+            calculationDone: false,
+            memoryValue: 0.0,
+            history: [],
+            mode: "daily", // 'daily' or 'scientific'
+        },
+        isDarkMode: false,
+        isHistoryVisible: false
+    };
+
+    // --- 主应用逻辑 ---
+
+    function init() {
+        // 选项卡切换
+        dom.tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                switchTab(targetTab);
+            });
+        });
+
+        // 主题切换
+        dom.toggleThemeBtn.addEventListener('click', toggleTheme);
+        // 从localStorage加载主题
+        if (localStorage.getItem('calculatorTheme') === 'dark') {
+            toggleTheme();
+        }
+
+        // 初始化计算器
+        initCalculator();
+        // 初始化单位换算器
+        initUnitConverter();
+        // 初始化其他工具
+        initDateCalc();
+        initBmiCalc();
+        initLoanCalc();
+        initTipCalc();
+        initDiscountCalc();
+    }
+    
+    function switchTab(targetTab) {
+        dom.tabs.forEach(t => t.classList.remove('active'));
+        dom.tabContents.forEach(c => c.classList.remove('active'));
+
+        document.querySelector(`.tab-button[data-tab="${targetTab}"]`).classList.add('active');
+        document.getElementById(`tab-${targetTab}`).classList.add('active');
+    }
+
+    function toggleTheme() {
+        state.isDarkMode = !state.isDarkMode;
+        dom.body.classList.toggle('dark-mode', state.isDarkMode);
+        localStorage.setItem('calculatorTheme', state.isDarkMode ? 'dark' : 'light');
+    }
+
+    // --- 计算器模块 ---
+
+    function initCalculator() {
+        dom.toggleHistoryBtn.addEventListener('click', toggleHistoryPanel);
+        dom.calculator.dailyModeBtn.addEventListener('click', () => setCalculatorMode('daily'));
+        dom.calculator.scientificModeBtn.addEventListener('click', () => setCalculatorMode('scientific'));
+        dom.calculator.clearHistoryBtn.addEventListener('click', clearHistory);
+        dom.calculator.historyList.addEventListener('click', onHistorySelect);
+
+        document.addEventListener('keydown', handleCalculatorKeyPress);
+        
+        generateCalculatorButtons();
+    }
+    
+    function toggleHistoryPanel() {
+        state.isHistoryVisible = !state.isHistoryVisible;
+        dom.calculator.historyPanel.classList.toggle('hidden', !state.isHistoryVisible);
+    }
+    
+    function setCalculatorMode(mode) {
+        state.calculator.mode = mode;
+        dom.calculator.dailyModeBtn.classList.toggle('active', mode === 'daily');
+        dom.calculator.scientificModeBtn.classList.toggle('active', mode === 'scientific');
+        generateCalculatorButtons();
+    }
+    
+    function generateCalculatorButtons() {
+        const container = dom.calculator.buttonsContainer;
+        container.innerHTML = '';
+
+        const dailyLayout = [
+            { t: "MC", c: "memory" }, { t: "MR", c: "memory" }, { t: "M+", c: "memory" }, { t: "M-", c: "memory" },
+            { t: "C", c: "clear-c" }, { t: "CE", c: "clear-ce operator" }, { t: "+/-", c: "scientific" }, { t: "/", c: "operator" },
+            { t: "7" }, { t: "8" }, { t: "9" }, { t: "*", c: "operator" },
+            { t: "4" }, { t: "5" }, { t: "6" }, { t: "-", c: "operator" },
+            { t: "1" }, { t: "2" }, { t: "3" }, { t: "+", c: "operator" },
+            { t: "0", s: "grid-column: span 2;" }, { t: "." }, { t: "=", c: "equals" },
+        ];
+        
+        const scientificLayout = [
+            { t: "sin", c: "scientific" }, { t: "cos", c: "scientific" }, { t: "tan", c: "scientific" }, { t: "CE", c: "clear-ce operator" }, { t: "C", c: "clear-c" },
+            { t: "ln", c: "scientific" }, { t: "log", c: "scientific" }, { t: "(", c: "parenthesis" }, { t: ")", c: "parenthesis" }, { t: "/", c: "operator" },
+            { t: "√", c: "scientific" }, { t: "x²", c: "scientific" }, { t: "x³", c: "scientific" }, { t: "1/x", c: "scientific" }, { t: "*", c: "operator" },
+            { t: "7" }, { t: "8" }, { t: "9" }, { t: "%", c: "scientific" }, { t: "-", c: "operator" },
+            { t: "4" }, { t: "5" }, { t: "6" }, { t: "n!", c: "scientific" }, { t: "+", c: "operator" },
+            { t: "1" }, { t: "2" }, { t: "3" }, { t: "=", c: "equals", s: "grid-row: span 2;"},
+            { t: "+/-", c: "scientific" }, { t: "0" }, { t: "." },
+            { t: "MC", c: "memory" }, { t: "MR", c: "memory" }, { t: "M+", c: "memory" }, { t: "M-", c: "memory" }, { t: "MS", c: "memory" },
+        ];
+        
+        const layout = state.calculator.mode === 'daily' ? dailyLayout : scientificLayout;
+        container.style.gridTemplateColumns = state.calculator.mode === 'daily' ? 'repeat(4, 1fr)' : 'repeat(5, 1fr)';
+
+        layout.forEach(btnInfo => {
+            const btn = document.createElement('button');
+            btn.textContent = btnInfo.t;
+            if (btnInfo.c) btn.className = btnInfo.c.split(' ').map(cls => `btn-${cls}`).join(' ');
+            if (btnInfo.s) btn.style.cssText = btnInfo.s;
+            btn.addEventListener('click', () => onCalculatorButtonClick(btnInfo.t));
+            container.appendChild(btn);
+        });
+    }
+    
+    function onCalculatorButtonClick(char) {
+        let { currentInput, calculationDone } = state.calculator;
+
+        if (calculationDone && !['+', '-', '*', '/', '%', '=', ')', 'CE', 'C', 'sin', 'cos', 'tan', 'ln', 'log', 'n!', '√', 'x²', 'x³', '1/x', '+/-', 'MC', 'MR', 'M+', 'M-', 'MS'].includes(char)) {
+            currentInput = "";
+        }
+        if (calculationDone && (char.match(/[0-9.]/) || char === '(' || char === 'MS')) {
+             if (char !== "MS") state.calculator.currentInput = "";
+             state.calculator.calculationDone = false;
+        }
+
+        switch (char) {
+            case 'C':
+                currentInput = "";
+                updateDisplay("0");
+                break;
+            case 'CE':
+                currentInput = currentInput.slice(0, -1);
+                updateDisplay(currentInput || "0");
+                break;
+            case '=':
+                calculateResult();
+                return;
+            case 'MC':
+                state.calculator.memoryValue = 0;
+                updateMemoryIndicator();
+                break;
+            case 'MR':
+                currentInput += state.calculator.memoryValue;
+                break;
+            case 'M+':
+                try {
+                    state.calculator.memoryValue += evaluate(currentInput || dom.calculator.display.value);
+                    updateMemoryIndicator();
+                } catch { updateDisplay("内存操作错误"); }
+                return;
+            case 'M-':
+                try {
+                    state.calculator.memoryValue -= evaluate(currentInput || dom.calculator.display.value);
+                    updateMemoryIndicator();
+                } catch { updateDisplay("内存操作错误"); }
+                return;
+            case 'MS':
+                 try {
+                    state.calculator.memoryValue = evaluate(currentInput || dom.calculator.display.value);
+                    updateMemoryIndicator();
+                } catch { updateDisplay("内存操作错误"); }
+                return;
+            case 'sin': case 'cos': case 'tan': case 'ln': case 'log': case 'n!': case '√': case 'x²': case 'x³': case '1/x': case '%': case '+/-':
+                handleScientific(char);
+                return;
+            case '+': case '-': case '*': case '/':
+                 if (currentInput.length > 0 && !['+', '-', '*', '/'].includes(currentInput.slice(-1))) {
+                    currentInput += char;
+                } else if (currentInput.length === 0 && char === '-') {
+                    currentInput += char;
+                }
+                break;
+            case '.':
+                const lastNum = currentInput.split(/[\+\-\*\/()]/).pop();
+                if (!lastNum.includes('.')) {
+                    currentInput += char;
+                }
+                break;
+            default:
+                if(currentInput === "0" && char !== '.'){
+                    currentInput = char;
+                } else {
+                    currentInput += char;
+                }
+                break;
+        }
+
+        state.calculator.currentInput = currentInput;
+        updateDisplay(currentInput || "0");
+        state.calculator.calculationDone = false;
+    }
+
+    function handleScientific(op) {
+        try {
+            let expression = state.calculator.currentInput || dom.calculator.display.value;
+            let val = evaluate(expression);
+            let result;
+
+            switch(op) {
+                case 'sin': result = Math.sin(val * Math.PI / 180); break;
+                case 'cos': result = Math.cos(val * Math.PI / 180); break;
+                case 'tan': result = Math.tan(val * Math.PI / 180); break;
+                case 'ln': result = Math.log(val); break;
+                case 'log': result = Math.log10(val); break;
+                case '√': result = Math.sqrt(val); break;
+                case 'x²': result = Math.pow(val, 2); break;
+                case 'x³': result = Math.pow(val, 3); break;
+                case '1/x': result = 1 / val; break;
+                case 'n!': result = factorial(val); break;
+                case '%': result = val / 100; break;
+                case '+/-': result = -val; break;
+            }
+            
+            if (!isFinite(result)) throw new Error("无效结果");
+            
+            const resultStr = formatResult(result);
+            state.calculator.currentInput = resultStr;
+            updateDisplay(resultStr);
+
+        } catch (e) {
+            updateDisplay("运算错误");
+            state.calculator.calculationDone = true;
+        }
+    }
+
+    function factorial(n) {
+        if (n < 0 || n !== Math.floor(n) || n > 170) throw new Error("阶乘定义域错误");
+        if (n === 0) return 1;
+        let result = 1;
+        for (let i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
+    }
+    
+    function calculateResult() {
+        if (!state.calculator.currentInput) return;
+        
+        let expression = state.calculator.currentInput;
+        try {
+            const result = evaluate(expression);
+            const resultStr = formatResult(result);
+            
+            addToHistory(expression, resultStr);
+            updateDisplay(resultStr);
+            state.calculator.currentInput = resultStr;
+            state.calculator.calculationDone = true;
+
+        } catch (e) {
+            updateDisplay(e instanceof SyntaxError ? "表达式无效" : "计算错误");
+            state.calculator.currentInput = "";
+            state.calculator.calculationDone = true;
+        }
+    }
+    
+    function evaluate(expression) {
+        const safeExpression = expression.replace(/π/g, 'Math.PI').replace(/e/g, 'Math.E');
+        return new Function('return ' + safeExpression)();
+    }
+
+    function formatResult(result) {
+        return String(Number(result.toPrecision(12)));
+    }
+    
+    function updateDisplay(value) {
+        dom.calculator.display.value = value;
+    }
+
+    function updateMemoryIndicator() {
+        dom.calculator.memoryIndicator.textContent = state.calculator.memoryValue !== 0 ? 'M' : '';
+    }
+
+    function addToHistory(expression, result) {
+        state.calculator.history.unshift({ expression, result });
+        if (state.calculator.history.length > 50) state.calculator.history.pop();
+        renderHistory();
+    }
+    
+    function renderHistory() {
+        dom.calculator.historyList.innerHTML = '';
+        state.calculator.history.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${item.expression} = ${item.result}`;
+            li.dataset.index = index;
+            dom.calculator.historyList.appendChild(li);
+        });
+    }
+    
+    function clearHistory() {
+        state.calculator.history = [];
+        renderHistory();
+    }
+    
+    function onHistorySelect(event) {
+        if (event.target.tagName !== 'LI') return;
+        const index = event.target.dataset.index;
+        const item = state.calculator.history[index];
+        
+        if (confirm(`表达式: ${item.expression}\n结果: ${item.result}\n\n是否将表达式加载到输入区？(选择“取消”将加载结果)`)) {
+            state.calculator.currentInput = item.expression;
+            updateDisplay(item.expression);
+        } else {
+            state.calculator.currentInput = item.result;
+            updateDisplay(item.result);
+        }
+        state.calculator.calculationDone = false;
+        switchTab('calculator');
+    }
+
+    function handleCalculatorKeyPress(event) {
+        const activeTab = document.querySelector('.tab-button.active').dataset.tab;
+        if (activeTab === 'calculator' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) {
+             event.preventDefault();
+            const key = event.key;
+            if (key.match(/[0-9.+\-*/()]/)) onCalculatorButtonClick(key);
+            else if (key === 'Enter' || key === '=') onCalculatorButtonClick('=');
+            else if (key === 'Backspace') onCalculatorButtonClick('CE');
+            else if (key === 'Escape') onCalculatorButtonClick('C');
+        }
+    }
+
+
+    // --- 单位换算器模块 ---
+
+    function initUnitConverter() {
+        const { type, button } = dom.unitConverter;
+        type.addEventListener('change', updateUnitOptions);
+        button.addEventListener('click', performUnitConversion);
+        updateUnitOptions();
+    }
+
+    const unitsData = {
+        "长度": {"米 (m)": 1.0, "千米 (km)": 1000.0, "厘米 (cm)": 0.01, "毫米 (mm)": 0.001, "英里 (mi)": 1609.34, "码 (yd)": 0.9144, "英尺 (ft)": 0.3048, "英寸 (in)": 0.0254},
+        "质量": {"千克 (kg)": 1.0, "克 (g)": 0.001, "毫克 (mg)": 0.000001, "吨 (t)": 1000.0, "磅 (lb)": 0.453592, "盎司 (oz)": 0.0283495},
+        "温度": {"摄氏度 (°C)": "C", "华氏度 (°F)": "F", "开尔文 (K)": "K"},
+        "面积": {"平方米 (m²)": 1.0, "平方千米 (km²)": 1e6, "公顷 (ha)": 1e4, "平方英尺 (ft²)": 0.092903, "英亩 (acre)": 4046.86},
+        "体积": {"立方米 (m³)": 1.0, "升 (L)": 0.001, "毫升 (mL)": 1e-6, "加仑(美制) (gal)": 0.00378541, "立方英尺 (ft³)": 0.0283168},
+        "速度": {"米/秒 (m/s)": 1.0, "千米/时 (km/h)": 1 / 3.6, "英里/时 (mph)": 0.44704, "节 (knot)": 0.514444}
+    };
+    
+    function updateUnitOptions() {
+        const { type, from, to } = dom.unitConverter;
+        const category = type.value;
+        const units = Object.keys(unitsData[category]);
+        
+        from.innerHTML = '';
+        to.innerHTML = '';
+        
+        units.forEach(unit => {
+            from.add(new Option(unit, unit));
+            to.add(new Option(unit, unit));
+        });
+        
+        if (units.length > 1) {
+            from.selectedIndex = 0;
+            to.selectedIndex = 1;
+        }
+    }
+
+    function performUnitConversion() {
+        const { type, from, to, input, result } = dom.unitConverter;
+        try {
+            const val = parseFloat(input.value);
+            if (isNaN(val)) {
+                result.textContent = "请输入有效数值";
+                return;
+            }
+
+            const category = type.value;
+            const fromUnit = from.value;
+            const toUnit = to.value;
+            const unitMap = unitsData[category];
+            let convertedVal;
+
+            if (category === "温度") {
+                const fu = unitMap[fromUnit];
+                const tu = unitMap[toUnit];
+                if (fu === tu) convertedVal = val;
+                else if (fu === "C") convertedVal = (tu === "F") ? (val * 9/5) + 32 : val + 273.15;
+                else if (fu === "F") convertedVal = (tu === "C") ? (val - 32) * 5/9 : (val - 32) * 5/9 + 273.15;
+                else if (fu === "K") convertedVal = (tu === "C") ? val - 273.15 : (val - 273.15) * 9/5 + 32;
+            } else {
+                const baseVal = val * unitMap[fromUnit];
+                convertedVal = baseVal / unitMap[toUnit];
+            }
+            
+            result.textContent = Number(convertedVal.toPrecision(7));
+        } catch {
+            result.textContent = "转换错误";
+        }
+    }
+    
+    // --- 日期计算器 ---
+    function initDateCalc() {
+        const { diffBtn, offsetBtn } = dom.dateCalc;
+        diffBtn.addEventListener('click', calculateDateDifference);
+        offsetBtn.addEventListener('click', calculateDateOffset);
+    }
+    
+    function calculateDateDifference() {
+        const { startDate, endDate, diffResult } = dom.dateCalc;
+        const start = new Date(startDate.value);
+        const end = new Date(endDate.value);
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            diffResult.textContent = "日期格式无效";
+            return;
+        }
+        const difference = (end - start) / (1000 * 60 * 60 * 24);
+        diffResult.textContent = `相差: ${difference} 天`;
+    }
+    
+    function calculateDateOffset() {
+        const { baseDate, offsetDays, offsetResult } = dom.dateCalc;
+        const base = new Date(baseDate.value);
+        const days = parseInt(offsetDays.value);
+         if (isNaN(base.getTime()) || isNaN(days)) {
+            offsetResult.textContent = "输入无效";
+            return;
+        }
+        base.setDate(base.getDate() + days);
+        offsetResult.textContent = `新日期: ${base.toISOString().split('T')[0]}`;
+    }
+
+    // --- BMI计算器 ---
+    function initBmiCalc() {
+        dom.bmi.button.addEventListener('click', calculateBmi);
+    }
+    
+    function calculateBmi() {
+        const { height, weight, result } = dom.bmi;
+        const h_m = parseFloat(height.value) / 100;
+        const w_kg = parseFloat(weight.value);
+        if (h_m <= 0 || w_kg <= 0 || isNaN(h_m) || isNaN(w_kg)) {
+            result.textContent = "请输入有效的身高和体重";
+            return;
+        }
+        const bmi = w_kg / (h_m * h_m);
+        let cat = "体重过轻"
+        if (bmi >= 32) cat = "非常肥胖";
+        else if (bmi >= 28) cat = "肥胖";
+        else if (bmi >= 24) cat = "超重";
+        else if (bmi >= 18.5) cat = "体重正常";
+        
+        result.textContent = `BMI: ${bmi.toFixed(2)} (${cat})`;
+    }
+
+    // --- 贷款计算器 ---
+    function initLoanCalc() {
+        dom.loan.button.addEventListener('click', calculateLoan);
+    }
+    
+    function calculateLoan() {
+        const { principal, rate, term, monthlyPayment, totalPayment, totalInterest } = dom.loan;
+        const P = parseFloat(principal.value);
+        const annual_r = parseFloat(rate.value) / 100;
+        const T_years = parseFloat(term.value);
+        
+        if (P <= 0 || annual_r < 0 || T_years <= 0 || [P, annual_r, T_years].some(isNaN)) {
+            monthlyPayment.textContent = "无效输入";
+            totalPayment.textContent = "";
+            totalInterest.textContent = "";
+            return;
+        }
+        
+        const r_monthly = annual_r / 12;
+        const N_months = T_years * 12;
+        
+        let M;
+        if (r_monthly === 0) {
+            M = P / N_months;
+        } else {
+            M = P * (r_monthly * (1 + r_monthly) ** N_months) / ((1 + r_monthly) ** N_months - 1);
+        }
+        
+        const totalP = M * N_months;
+        const totalI = totalP - P;
+        
+        monthlyPayment.textContent = M.toFixed(2);
+        totalPayment.textContent = totalP.toFixed(2);
+        totalInterest.textContent = totalI.toFixed(2);
+    }
+    
+    // --- 小费计算器 ---
+    function initTipCalc() {
+        dom.tip.button.addEventListener('click', calculateTip);
+    }
+    
+    function calculateTip() {
+        const { bill, percent, people, amount, totalBill, perPerson } = dom.tip;
+        const billVal = parseFloat(bill.value);
+        const tipP = parseFloat(percent.value);
+        const numP = parseInt(people.value);
+        
+        if (billVal < 0 || tipP < 0 || numP <= 0 || [billVal, tipP, numP].some(isNaN)) {
+            amount.textContent = "无效输入";
+            totalBill.textContent = "";
+            perPerson.textContent = "";
+            return;
+        }
+        
+        const tipAmount = billVal * (tipP / 100);
+        const total = billVal + tipAmount;
+        const perP = total / numP;
+        
+        amount.textContent = tipAmount.toFixed(2);
+        totalBill.textContent = total.toFixed(2);
+        perPerson.textContent = perP.toFixed(2);
+    }
+
+    // --- 折扣计算器 ---
+    function initDiscountCalc() {
+        dom.discount.button.addEventListener('click', calculateDiscount);
+    }
+
+    function calculateDiscount() {
+        const { originalPrice, percent, finalPrice, savedAmount } = dom.discount;
+        const origPrice = parseFloat(originalPrice.value);
+        const discP = parseFloat(percent.value);
+
+        if (origPrice < 0 || discP < 0 || discP > 100 || [origPrice, discP].some(isNaN)) {
+             finalPrice.textContent = "无效输入";
+             savedAmount.textContent = "";
+             return;
+        }
+        
+        const saved = origPrice * (discP / 100);
+        const final = origPrice - saved;
+        
+        finalPrice.textContent = final.toFixed(2);
+        savedAmount.textContent = saved.toFixed(2);
+    }
+
+
+    // --- 启动应用 ---
+    init();
+});
+</script>
+
+</body>
+</html>
