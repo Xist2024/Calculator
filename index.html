@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多功能计算器 - 毛玻璃风格</title>
+    <title>多功能计算器</title>
     <style>
         /* --- Google Fonts (保持 modernity) --- */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
@@ -403,7 +403,7 @@
         <div class="header-bar">
             <h1>多功能计算器</h1>
             <div class="menu-buttons">
-                <button id="toggle-history-btn">历史记录</button>
+                <button id="toggle-history-btn">点击跳转我的主页</button>
             </div>
         </div>
 
@@ -703,7 +703,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 计算器模块 ---
 
     function initCalculator() {
-        dom.toggleHistoryBtn.addEventListener('click', toggleHistoryPanel);
+        dom.toggleHistoryBtn.addEventListener('click', () => {
+    window.open('http://xist.cn', '_blank');
+});
         dom.calculator.dailyModeBtn.addEventListener('click', () => setCalculatorMode('daily'));
         dom.calculator.scientificModeBtn.addEventListener('click', () => setCalculatorMode('scientific'));
         dom.calculator.clearHistoryBtn.addEventListener('click', clearHistory);
