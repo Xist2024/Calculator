@@ -3,76 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多功能计算器 - 毛玻璃版</title>
+    <title>多功能计算器 - 毛玻璃风格</title>
     <style>
-        /* --- Google Fonts for a modern look (Optional) --- */
+        /* --- Google Fonts (保持 modernity) --- */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-        /* --- 主题颜色和设计变量 --- */
-        :root {
-            --font-family: 'Roboto', "Microsoft YaHei UI", sans-serif;
-            --base-font-size: 16px; /* Base size for rem units */
-
-            /* Light Mode */
-            --bg-gradient: linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
-            --text-color: #1a1a1a;
-            --text-color-faded: #33333399;
-            --glass-bg: rgba(255, 255, 255, 0.25);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --glass-shadow: rgba(0, 0, 0, 0.1);
-            --button-hover-bg: rgba(255, 255, 255, 0.2);
-            --operator-text-color: #d16ba5;
-            --equals-bg: #d16ba5;
-            --equals-text-color: #fff;
-            --equals-hover-bg: #c777b9;
-            --clear-bg: #f86969;
-            --clear-hover-bg: #f85050;
-            --tab-active-bg: rgba(255, 255, 255, 0.3);
-            --input-bg: rgba(255, 255, 255, 0.15);
-        }
-
-        .dark-mode {
-            /* Dark Mode */
-            --bg-gradient: linear-gradient(to right top, #0d0c1d, #16182e, #1d2540, #243353, #2a4267, #265377, #1f6486, #147694, #008a9a, #009c96, #00ac89, #12b975);
-            --text-color: #f0f0f0;
-            --text-color-faded: #cccccc99;
-            --glass-bg: rgba(22, 24, 46, 0.25);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --glass-shadow: rgba(0, 0, 0, 0.2);
-            --button-hover-bg: rgba(255, 255, 255, 0.1);
-            --operator-text-color: #5ffbf1;
-            --equals-bg: #12b975;
-            --equals-text-color: #1a1a1a;
-            --equals-hover-bg: #5ffbf1;
-            --clear-bg: #f86969;
-            --clear-hover-bg: #f85050;
-            --tab-active-bg: rgba(255, 255, 255, 0.1);
-            --input-bg: rgba(0, 0, 0, 0.15);
-        }
-
-        /* --- 基础和背景样式 --- */
+        /* --- 基础和背景样式 (改编自参考 style.css) --- */
         * {
             box-sizing: border-box;
-            font-family: var(--font-family);
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         html {
-            font-size: var(--base-font-size);
+            font-size: 16px;
         }
 
         body {
             margin: 0;
-            padding: 0;
-            height: 100vh;
+            padding: 20px;
+            min-height: 100vh;
             overflow: hidden;
-            background: var(--bg-gradient);
-            color: var(--text-color);
-            transition: background 0.5s, color 0.5s;
             display: flex;
             justify-content: center;
             align-items: center;
+            color: #f0f0f0; /* 全局文字颜色 */
+            /* 沿用原版动态渐变背景，因为它比静态图片更现代 */
+            background: linear-gradient(to right top, #0d0c1d, #16182e, #1d2540, #243353, #2a4267, #265377, #1f6486, #147694, #008a9a, #009c96, #00ac89, #12b975);
+            background-size: cover;
+            background-position: center;
         }
 
+        /* --- 主应用容器 (改编自 .card-base) --- */
         .app-container {
             width: 95vw;
             height: 95vh;
@@ -80,15 +41,16 @@
             max-height: 800px;
             display: flex;
             flex-direction: column;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 var(--glass-shadow);
+            background: rgba(30, 35, 70, 0.25); /* 毛玻璃效果 */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 20px; /* 圆角 */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* 边框 */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); /* 阴影 */
             overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         /* --- 顶部菜单和选项卡 --- */
         .header-bar {
             padding: 0.75rem 1.5rem;
@@ -96,36 +58,40 @@
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .header-bar h1 {
             font-size: 1.25rem;
             font-weight: 500;
             margin: 0;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
         }
 
         .menu-buttons button {
-            background: transparent;
-            color: var(--text-color);
-            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.1);
+            color: #f0f0f0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 0.5rem 1rem;
             border-radius: 20px;
             cursor: pointer;
             font-size: 0.8rem;
             margin-left: 0.5rem;
-            transition: background-color 0.2s;
+            transition: background 0.2s, transform 0.1s;
         }
         
         .menu-buttons button:hover {
-            background-color: var(--button-hover-bg);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .menu-buttons button:active {
+            transform: scale(0.95);
         }
 
         .tab-bar {
             display: flex;
             flex-wrap: wrap;
             padding: 0 0.5rem;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
             flex-shrink: 0;
         }
 
@@ -134,24 +100,25 @@
             cursor: pointer;
             border: none;
             background-color: transparent;
-            color: var(--text-color);
+            color: #e0e0e0;
             font-size: 1rem;
             font-weight: 400;
             border-radius: 10px 10px 0 0;
             transition: all 0.2s;
-            position: relative;
             opacity: 0.7;
         }
         
         .tab-button.active {
             font-weight: 500;
-            background-color: var(--tab-active-bg);
+            background-color: rgba(255, 255, 255, 0.1);
             opacity: 1;
+            color: #fff;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
         
         .tab-button:hover {
             opacity: 1;
-            background-color: var(--tab-active-bg);
+            background-color: rgba(255, 255, 255, 0.15);
         }
 
         .tab-content {
@@ -185,11 +152,11 @@
             flex-direction: column;
             padding: 1.25rem;
             transition: all 0.3s;
-            background: var(--glass-bg);
+            background: rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-radius: 16px;
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         
         .history-panel.hidden {
@@ -201,6 +168,7 @@
             text-align: center;
             font-size: 1.1rem;
             font-weight: 500;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
 
         #history-listbox {
@@ -221,7 +189,7 @@
             transition: background-color 0.2s;
         }
         #history-listbox li:hover {
-            background-color: var(--button-hover-bg);
+            background-color: rgba(255, 255, 255, 0.1);
         }
         
         /* --- 计算器显示屏和按钮 --- */
@@ -231,20 +199,21 @@
             margin-bottom: 1rem;
             text-align: right;
             position: relative;
-            background: var(--input-bg);
-            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         #display-entry {
             width: 100%;
             background: transparent;
             border: none;
-            color: var(--text-color);
-            font-size: 3.5rem; /* Increased font size */
+            color: #fff;
+            font-size: 3.5rem;
             font-weight: 300;
             text-align: right;
             padding: 1rem 0.5rem 0.5rem;
             outline: none;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
         }
 
         #memory-indicator {
@@ -253,88 +222,89 @@
             top: 1rem;
             font-size: 1rem;
             font-weight: 700;
-            color: var(--operator-text-color);
+            color: #5ffbf1;
         }
         
         .mode-toggle-frame {
             display: flex;
             margin-bottom: 1rem;
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             overflow: hidden;
+            background: rgba(0, 0, 0, 0.1);
         }
         .mode-toggle-frame button {
             flex-grow: 1;
             padding: 0.75rem;
-            font-size: 0.9rem; /* Increased font size */
+            font-size: 0.9rem;
             border: none;
             background-color: transparent;
-            color: var(--text-color);
+            color: #e0e0e0;
             cursor: pointer;
             transition: all 0.2s;
         }
         .mode-toggle-frame button.active {
-            background-color: var(--button-hover-bg);
+            background-color: rgba(255, 255, 255, 0.15);
             font-weight: 500;
+            color: #fff;
         }
         .mode-toggle-frame button:first-child {
-            border-right: 1px solid var(--glass-border);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .buttons-container {
             display: grid;
-            gap: 0.75rem; /* Increased gap */
+            gap: 0.75rem;
             flex-grow: 1;
         }
 
         .buttons-container button {
-            font-size: 1.5rem; /* Increased font size */
+            font-size: 1.5rem;
             font-weight: 400;
             border-radius: 16px;
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             cursor: pointer;
             transition: all 0.15s;
-            background: transparent;
-            color: var(--text-color);
-            min-height: 60px; /* Increased height */
+            background: rgba(255, 255, 255, 0.1);
+            color: #f0f0f0;
+            min-height: 60px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .buttons-container button:hover {
-            background-color: var(--button-hover-bg);
+            background-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
         }
         
         .buttons-container button:active {
             transform: translateY(0px) scale(0.98);
-            background-color: var(--glass-bg);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
         .btn-operator, .btn-scientific, .btn-parenthesis {
-            color: var(--operator-text-color);
-            font-weight: 500;
+            background: rgba(200, 150, 80, 0.4);
+            color: #fff;
+        }
+        .btn-operator:hover, .btn-scientific:hover, .btn-parenthesis:hover {
+            background: rgba(200, 150, 80, 0.6);
         }
 
         .btn-equals {
-            background-color: var(--equals-bg);
-            color: var(--equals-text-color);
+            background-color: rgba(80, 200, 80, 0.4);
+            color: #fff;
             font-weight: 700;
         }
         .btn-equals:hover {
-            background-color: var(--equals-hover-bg);
-        }
-        .dark-mode .btn-equals:hover {
-            color: #1a1a1a;
+            background-color: rgba(80, 200, 80, 0.6);
         }
 
         .btn-clear-c {
-            background-color: var(--clear-bg);
-            color: var(--equals-text-color);
+            background-color: rgba(220, 80, 80, 0.4);
+            color: #fff;
         }
         .btn-clear-c:hover {
-            background-color: var(--clear-hover-bg);
+            background-color: rgba(220, 80, 80, 0.6);
         }
-
-        .grid-span-2 { grid-column: span 2; }
         
         /* --- 其他工具通用样式 --- */
         .tool-grid-container {
@@ -343,18 +313,19 @@
             gap: 2rem;
         }
         
-        .tool-frame {
+        .tool-frame, fieldset.tool-frame {
             padding: 1.5rem;
             border-radius: 16px;
-            border: 1px solid var(--glass-border);
-            background: var(--glass-bg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .tool-frame legend {
             font-weight: 500;
             font-size: 1.2rem;
             padding: 0 1rem;
-            color: var(--text-color);
+            color: #f0f0f0;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
         
         .tool-grid {
@@ -375,17 +346,18 @@
             width: 100%;
             padding: 0.8rem;
             border-radius: 10px;
-            border: 1px solid var(--glass-border);
-            background-color: var(--input-bg);
-            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background-color: rgba(0, 0, 0, 0.2);
+            color: #f0f0f0;
             font-size: 1rem;
             outline: none;
             transition: all 0.2s;
         }
+        .tool-grid input::placeholder { color: rgba(255, 255, 255, 0.5); }
 
         .tool-grid input:focus, .tool-grid select:focus {
-            background-color: var(--button-hover-bg);
-            border-color: var(--operator-text-color);
+            background-color: rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
         }
         
         .tool-grid button {
@@ -396,31 +368,33 @@
             border-radius: 12px;
             border: none;
             cursor: pointer;
-            background-color: var(--equals-bg);
-            color: var(--equals-text-color);
+            background-color: rgba(80, 150, 220, 0.4);
+            color: #fff;
             transition: all 0.2s;
         }
         .tool-grid button:hover {
-             background-color: var(--equals-hover-bg);
+             background-color: rgba(80, 150, 220, 0.6);
              transform: translateY(-2px);
         }
 
         .result-label, .multi-result-label {
-            background-color: var(--input-bg);
-            border: 1px solid var(--glass-border);
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 1rem;
             border-radius: 10px;
             font-size: 1.1rem;
             min-height: 50px;
             display: flex;
             align-items: center;
+            color: #fff;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
         }
         
         .result-label {
             grid-column: 1 / -1;
             font-weight: 500;
+            justify-content: center;
         }
-
     </style>
 </head>
 <body>
@@ -430,7 +404,6 @@
             <h1>多功能计算器</h1>
             <div class="menu-buttons">
                 <button id="toggle-history-btn">历史记录</button>
-                <button id="toggle-theme-btn">切换主题</button>
             </div>
         </div>
 
@@ -577,11 +550,9 @@
                     
                     <label>小费金额:</label>
                     <div id="tip-amount" class="multi-result-label"></div>
-                    <label>总金额:</label>
+                    <label>需要支付的总金额:</label>
                     <div id="tip-total-bill" class="multi-result-label"></div>
-                    <label>每人支付:</label>
-                    <div id="tip-per-person" class="multi-result-label"></div>
-                </div>
+                                 </div>
             </div>
         </div>
 
@@ -595,9 +566,9 @@
                     <input type="number" id="discount-percent" placeholder="例如: 85 (代表85折)">
                     <button id="calculate-discount-btn">计算</button>
                     
-                    <label>折后价:</label>
-                    <div id="discount-final-price" class="multi-result-label"></div>
                     <label>节省金额:</label>
+                    <div id="discount-final-price" class="multi-result-label"></div>
+                    <label>折后价:</label>
                     <div id="discount-saved-amount" class="multi-result-label"></div>
                 </div>
             </div>
@@ -605,8 +576,6 @@
     </div>
 
 <script>
-// The JavaScript logic remains the same as it correctly implements all functionalities.
-// It is included here unmodified.
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- 全局状态和DOM元素 ---
@@ -614,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: document.body,
         tabs: document.querySelectorAll('.tab-button'),
         tabContents: document.querySelectorAll('.tab-content'),
-        toggleThemeBtn: document.getElementById('toggle-theme-btn'),
+        // toggleThemeBtn is removed
         toggleHistoryBtn: document.getElementById('toggle-history-btn'),
         // 计算器
         calculator: {
@@ -692,8 +661,8 @@ document.addEventListener('DOMContentLoaded', () => {
             history: [],
             mode: "daily", // 'daily' or 'scientific'
         },
-        isDarkMode: false,
         isHistoryVisible: false
+        // isDarkMode state is removed
     };
 
     // --- 主应用逻辑 ---
@@ -707,12 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // 主题切换
-        dom.toggleThemeBtn.addEventListener('click', toggleTheme);
-        // 从localStorage加载主题
-        if (localStorage.getItem('calculatorTheme') === 'dark') {
-            toggleTheme();
-        }
+        // Theme switching logic is removed
 
         // 初始化计算器
         initCalculator();
@@ -734,11 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById(`tab-${targetTab}`).classList.add('active');
     }
 
-    function toggleTheme() {
-        state.isDarkMode = !state.isDarkMode;
-        dom.body.classList.toggle('dark-mode', state.isDarkMode);
-        localStorage.setItem('calculatorTheme', state.isDarkMode ? 'dark' : 'light');
-    }
+    // toggleTheme function is removed
 
     // --- 计算器模块 ---
 
@@ -771,7 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = '';
 
         const dailyLayout = [
-            { t: "MC", c: "memory" }, { t: "MR", c: "memory" }, { t: "M+", c: "memory" }, { t: "M-", c: "memory" },
+            { t: "MC", c: "memory scientific" }, { t: "MR", c: "memory scientific" }, { t: "M+", c: "memory scientific" }, { t: "M-", c: "memory scientific" },
             { t: "C", c: "clear-c" }, { t: "CE", c: "clear-ce operator" }, { t: "+/-", c: "scientific" }, { t: "/", c: "operator" },
             { t: "7" }, { t: "8" }, { t: "9" }, { t: "*", c: "operator" },
             { t: "4" }, { t: "5" }, { t: "6" }, { t: "-", c: "operator" },
@@ -787,7 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { t: "4" }, { t: "5" }, { t: "6" }, { t: "n!", c: "scientific" }, { t: "+", c: "operator" },
             { t: "1" }, { t: "2" }, { t: "3" }, { t: "=", c: "equals", s: "grid-row: span 2;"},
             { t: "+/-", c: "scientific" }, { t: "0" }, { t: "." },
-            { t: "MC", c: "memory" }, { t: "MR", c: "memory" }, { t: "M+", c: "memory" }, { t: "M-", c: "memory" }, { t: "MS", c: "memory" },
+            { t: "MC", c: "memory scientific" }, { t: "MR", c: "memory scientific" }, { t: "M+", c: "memory scientific" }, { t: "M-", c: "memory scientific" }, { t: "MS", c: "memory scientific" },
         ];
         
         const layout = state.calculator.mode === 'daily' ? dailyLayout : scientificLayout;
@@ -1214,8 +1174,8 @@ document.addEventListener('DOMContentLoaded', () => {
              return;
         }
         
-        const saved = origPrice * (discP / 100);
-        const final = origPrice - saved;
+        const final = origPrice * (1 - (discP / 100)); // Corrected discount calculation
+        const saved = origPrice - final;
         
         finalPrice.textContent = final.toFixed(2);
         savedAmount.textContent = saved.toFixed(2);
