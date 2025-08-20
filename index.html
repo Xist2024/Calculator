@@ -19,20 +19,16 @@
         }
 
         body {
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            /* ...其他样式... */
             color: #f0f0f0; /* 全局文字颜色 */
-            /* 沿用原版动态渐变背景，因为它比静态图片更现代 */
-            background: linear-gradient(to right top, #0d0c1d, #16182e, #1d2540, #243353, #2a4267, #265377, #1f6486, #147694, #008a9a, #009c96, #00ac89, #12b975);
+            /* 【已修改】将背景设置为bj.jpg，并添加半透明黑色叠加层 */
+            background-image: url('bj.jpg');
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
+            background-color: rgba(0, 0, 0, 0.5);
+            background-blend-mode: overlay;
         }
-
         /* --- 主应用容器 (改编自 .card-base) --- */
         .app-container {
             width: 95vw;
