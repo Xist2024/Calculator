@@ -19,9 +19,14 @@
         }
 
         body {
-            /* ...其他样式... */
-            color: #f0f0f0; /* 全局文字颜色 */
-            /* 【已修改】将背景设置为bj.jpg，并添加半透明黑色叠加层 */
+            margin: 0;
+            padding: 20px; /* 增加内边距 */
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex; /* 启用Flexbox */
+            justify-content: center; /* 垂直居中 */
+            align-items: center; /* 水平居中 */
+            color: #f0f0f0;
             background-image: url('bj.jpg');
             background-size: cover;
             background-position: center;
@@ -1187,3 +1192,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
